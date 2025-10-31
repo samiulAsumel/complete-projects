@@ -20,7 +20,8 @@ audit_users() {
 
 	# System Users (UID < 1000)
 	print_section "System Service Accounts"
-	local sys_count=$(awk -F: '$3 < 1000 {print $1}' /etc/passwd | wc -l)
+	local sys_count
+	sys_count=$(awk -F: '$3 < 1000 {print $1}' /etc/passwd | wc -l)
 	echo "Total system accounts: $sys_count"
 
 	# User with sudo privileges
@@ -32,10 +33,10 @@ audit_users() {
 	else
 		echo "No privileged group found."
 	fi
-
 	# Check for users without password (Security Risk!)
 	print_section "Security check: Passwordless Users"
-	local no_password_count=$(awk -F: '($2 == "" || $2 == "!") && $3 >= 1000 {print $1}' /etc/passwd | wc -l)
+	local no_password_count
+	no_password_count=$(awk -F: '($2 == "" || $2 == "!") && $3 >= 1000 {print $1}' /etc/passwd | wc -l)
 
 	if [[ -n "$no_password_count" ]]; then
 		print_error "Found accounts without password:"
@@ -43,10 +44,10 @@ audit_users() {
 	else
 		print_success "All user accounts have passwords."
 	fi
-
 	# Check for UID 0 users (should only be root)
 	print_section "Security check: Root-level Users (UID 0)"
-	local root_users=$(awk -F: '$3 == 0 {print $1}' /etc/passwd)
+	local root_users
+	root_users=$(awk -F: '$3 == 0 {print $1}' /etc/passwd)
 
 	if [[ "$root_users" != "root" ]]; then
 		print_success "Only root has UID 0"

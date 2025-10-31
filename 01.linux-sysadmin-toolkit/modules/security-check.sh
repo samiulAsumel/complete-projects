@@ -17,7 +17,8 @@ security_scan() {
 
 	# Check 1: World-writable files in critical directories
 	print_section "Check: World-writable Files in Critical Directories"
-	local writable=$(find /etc /bin/ /sbin /usr/bin /usr/sbin -type f -perm -002 2>/dev/null)
+	local writable
+	writable=$(find /etc /bin/ /sbin /usr/bin /usr/sbin -type f -perm -002 2>/dev/null)
 
 	if [[ -n "$writable" ]]; then
 		print_error "Found world-writable files in system directories:"
