@@ -12,17 +12,17 @@ set -eou pipefail # Exit on error, undefined variable, or pipeline error
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source utilities
-source "$SCRIPT_DIR/../utils/logger.sh"
-source "$SCRIPT_DIR/../utils/colors.sh"
+source "$SCRIPT_DIR/utils/logger.sh"
+source "$SCRIPT_DIR/utils/colors.sh"
 
 # Configuration
-REPORT_DIR="$SCRIPT_DIR/../data/reports"
-LOG_FILE="$SCRIPT_DIR/../logs/sysadmin-toolkit.log"
+REPORT_DIR="$SCRIPT_DIR/data/reports"
+LOG_FILE="$SCRIPT_DIR/logs/sysadmin-toolkit.log"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 REPORT_FILE="$REPORT_DIR/sysadmin-report-$TIMESTAMP.txt"
 
 # Ensure directories exist
-mkdir -p "$REPORT_DIR" "$SCRIPT_DIR/../logs"
+mkdir -p "$REPORT_DIR" "$SCRIPT_DIR/logs"
 
 ###################################################################################
 # Function: Display usage information
@@ -72,13 +72,13 @@ run_full_analysis() {
 	log_info "Starting full system audit..."
 
 	# Execute modules
-	source "$SCRIPT_DIR/../modules/system-info.sh" && collect_system_info
+	source "$SCRIPT_DIR/modules/system-info.sh" && collect_system_info
 	echo
 
-	source "$SCRIPT_DIR/../modules/user-audit.sh" && audit_users
+	source "$SCRIPT_DIR/modules/user-audit.sh" && audit_users
 	echo
 
-	source "$SCRIPT_DIR/../modules/security-check.sh" && security_scan
+	source "$SCRIPT_DIR/modules/security-check.sh" && security_scan
 	echo
 
 	log_info "Full audit completed successfully."
@@ -104,11 +104,11 @@ generate_report() {
 		echo ""
 
 		# Run all checks and capture output
-		bash "$SCRIPT_DIR/../modules/system-info.sh" 2>&1
+		bash "$SCRIPT_DIR/modules/system-info.sh" 2>&1
 		echo
-		bash "$SCRIPT_DIR/../modules/user-audit.sh" 2>&1
+		bash "$SCRIPT_DIR/modules/user-audit.sh" 2>&1
 		echo
-		bash "$SCRIPT_DIR/../modules/security-check.sh" 2>&1
+		bash "$SCRIPT_DIR/modules/security-check.sh" 2>&1
 		echo
 		echo "==============================================="
 		echo "End of Report"
@@ -130,13 +130,13 @@ main() {
 	# Parse command line arguments
 	case "${1:-full}" in
 		info)
-			source "$SCRIPT_DIR/../modules/system-info.sh" && collect_system_info
+			source "$SCRIPT_DIR/modules/system-info.sh" && collect_system_info
 			;;
 		audit)
-			source "$SCRIPT_DIR/../modules/user-audit.sh" && audit_users
+			source "$SCRIPT_DIR/modules/user-audit.sh" && audit_users
 			;;
 		security)
-			source "$SCRIPT_DIR/../modules/security-check.sh" && security_scan
+			source "$SCRIPT_DIR/modules/security-check.sh" && security_scan
 			;;
 		full)
 			run_full_analysis
