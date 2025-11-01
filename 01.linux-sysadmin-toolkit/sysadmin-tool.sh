@@ -12,8 +12,8 @@ set -eou pipefail # Exit on error, undefined variable, or pipeline error
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source utilities
-source "$SCRIPT_DIR"/utils/logger.sh
-source "$SCRIPT_DIR"/utils/colors.sh
+source "$SCRIPT_DIR/utils/logger.sh"
+source "$SCRIPT_DIR/utils/colors.sh"
 
 # Configuration
 REPORT_DIR="$SCRIPT_DIR/data/reports"
@@ -116,7 +116,7 @@ generate_report() {
 	} > "$REPORT_FILE"
 
 	print_success "Report generated successfully: $REPORT_FILE"
-	log_info "Report saved successfully"
+	log_info "Report saved successfully."
 }
 
 ####################################################################################
@@ -124,7 +124,7 @@ generate_report() {
 main() {
 	# Check if running with sufficient privileges for security checks
 	if [[ $EUID -ne 0 ]]; then
-		print_warning "Some checks require root privileges. Run with sudo for full audit"
+		print_warning "Some checks require root privileges. Run with sudo for full audit."
 	fi
 
 	# Parse command line arguments
@@ -160,4 +160,4 @@ main() {
 }
 
 # Execute main function
-main "$@" 
+main "$@"
