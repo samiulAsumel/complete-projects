@@ -24,9 +24,9 @@ fi
 # Set up paths
 LOG_DIR="/opt/system-health-monitor/logs"
 REPORT_DIR="/opt/system-health-monitor/reports"
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-LOG_FILE="$LOG_DIR/health-$(date +%Y%m%d).log"
-REPORT_FILE="$REPORT_DIR/health-report-$(date +%Y%m%d_%H%M%S).html"
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+LOG_FILE="$LOG_DIR/health-$(date +%Y-%m-%d).log"
+REPORT_FILE="$REPORT_DIR/health-report-$(date +%Y-%m-%d_%H-%M-%S).html"
 
 # Create directories if they don't exist
 mkdir -p "$LOG_DIR" "$REPORT_DIR"
