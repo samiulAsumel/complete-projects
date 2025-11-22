@@ -105,7 +105,46 @@ check_threshold() {
 	echo -e "${color}${status}${NC}"
 }
 
-###############################################
+##############################################
+# Function: Monitor multiple partitions
+##############################################
+check_all_disks() {
+	df -h | grep -vE '^Filesystem|tmpfs|cdrom' | while read -r line; do
+		usage=$(echo "$line" | awk '{print $5}' | sed 's/%//')
+		mount=$(echo "$line" | awk '{print $6}')
+		
+		if [ "$usage" -gt "$DISK_THRESHOLD" ]; then
+			log_message "WARNING: $mount is ${usage}% full!"
+		fi
+	done
+}
+
+##############################################
+# Function: Check critical services
+##############################################
+check_critical_services() {
+	SERVICES=("sshd" "httpd" "mysqld" "docker")
+	
+	for service in "${SERVICES[@]}"; do
+		if ! systemctl is-active --quiet "$service"; then
+			log_message "CRITICAL: $service is not running!"
+			# Auto-restart service
+			sudo systemctl restart "$service"
+			log_message "Attempted to restart $service"
+		fi
+	done
+}
+
+##############################################
+# Function: Check internet connectivity
+##############################################
+check_network() {
+	if ! ping -c 1 8.8.8.8 &> /dev/null; then
+		log_message "WARNING: Network connectivity issue detected!"
+	fi
+}
+
+##############################################
 # Function: Generate HTML report
 ##############################################
 generate_html_report() {
@@ -249,9 +288,28 @@ echo -e "Load Average (5-min): ${YELLOW}${LOAD_AVERAGE}${NC}"
 # Log Metrics
 log_message "CPU: ${CPU_USAGE}%, Memory: ${MEMORY_USAGE}%, Disk: ${DISK_USAGE}%, Load Avg (5-min): ${LOAD_AVERAGE}"
 
+# Additional checks
+check_all_disks
+check_critical_services
+check_network
+
 # Generate HTML report
 if [[ "$GENERATE_HTML_REPORT" == "yes" ]]; then
 	generate_html_report "$CPU_USAGE" "$MEMORY_USAGE" "$DISK_USAGE" "$LOAD_AVERAGE"
+fi
+
+# Send alert if any metric exceeds threshold
+if (( CPU_USAGE > CPU_THRESHOLD )) || (( MEMORY_USAGE > MEMORY_THRESHOLD )) || (( DISK_USAGE > DISK_THRESHOLD )); then
+	ALERT_MSG="Server: $HOSTNAME
+Time: $TIMESTAMP
+CPU Usage: ${CPU_USAGE}%
+Memory Usage: ${MEMORY_USAGE}%
+Disk Usage: ${DISK_USAGE}%
+Load Average (5-min): ${LOAD_AVERAGE}"
+
+	if [[ -x "/opt/system-health-monitor/bin/send-alert.sh" ]]; then
+		/opt/system-health-monitor/bin/send-alert.sh "$ALERT_MSG"
+	fi
 fi
 
 # Clean up old logs (keep last 30 days)
