@@ -59,7 +59,7 @@ cat > "$CENTRAL_REPORT_DIR/$DATE/dashboard.html" << 'EOF'
     <div class="container">
         <h1>TechCorp Infrastructure Dashboard</h1>
         <p class="timestamp">Generated: $(date '+%Y-%m-%d %H:%M:%S')</p>
-        
+
         <div class="server-grid">
 EOF
 
